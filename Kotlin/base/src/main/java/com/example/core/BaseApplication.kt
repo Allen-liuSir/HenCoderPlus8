@@ -1,22 +1,17 @@
-package com.example.core;
+package com.example.core
 
-import android.app.Application;
-import android.content.Context;
+import android.app.Application
+import android.content.Context
 
-import androidx.annotation.NonNull;
+class BaseApplication : Application() {
 
-public class BaseApplication extends Application {
-
-    private static Context currentApplication;
-
-    @NonNull
-    public static Context currentApplication() {
-        return currentApplication;
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(base)
+        application = this
     }
 
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-        currentApplication = this;
+    companion object {
+        lateinit var application: Context
+            private set
     }
 }

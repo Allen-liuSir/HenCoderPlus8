@@ -1,66 +1,57 @@
-package com.example.app.widget;
+package com.example.app.widget
 
-import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.util.AttributeSet;
-import android.util.TypedValue;
-import android.view.Gravity;
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.util.AttributeSet
+import kotlin.jvm.JvmOverloads
+import androidx.appcompat.widget.AppCompatTextView
+import android.util.TypedValue
+import android.view.Gravity
+import com.example.app.R
+import com.example.core.utils.Utils
+import com.example.core.utils.dp2px
+import java.util.*
 
-import com.example.app.R;
-import com.example.core.utils.Utils;
+class CodeView @JvmOverloads constructor(context: Context?, attrs: AttributeSet? = null) : AppCompatTextView(context, attrs) {
 
-import java.util.Random;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatTextView;
-
-public class CodeView extends AppCompatTextView {
-
-    public CodeView(Context context) {
-        this(context, null);
+    private val paint by lazy {
+        Paint().apply {
+            isAntiAlias = true
+            style = Paint.Style.STROKE
+            color = getContext().getColor(R.color.colorAccent)
+            strokeWidth = 6f.dp2px()
+        }
     }
 
-    public CodeView(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-        setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f);
-        setGravity(Gravity.CENTER);
-        setBackgroundColor(getContext().getColor(R.color.colorPrimary));
-        setTextColor(Color.WHITE);
+    private val codeList = arrayOf(
+        "kotlin",
+        "android",
+        "java",
+        "http",
+        "https",
+        "okhttp",
+        "retrofit",
+        "tcp/ip"
+    )
 
-        paint.setAntiAlias(true);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(getContext().getColor(R.color.colorAccent));
-        paint.setStrokeWidth(Utils.dp2px(6f));
-
-        updateCode();
+    fun updateCode() {
+        val random = Random().nextInt(codeList.size)
+        val code = codeList[random]
+        text = code
     }
 
-    private Paint paint = new Paint();
-
-    private String[] codeList = new String[]{
-            "kotlin",
-            "android",
-            "java",
-            "http",
-            "https",
-            "okhttp",
-            "retrofit",
-            "tcp/ip"
-    };
-
-
-    public void updateCode() {
-        final int random = new Random().nextInt(codeList.length);
-        final String code = codeList[random];
-        setText(code);
+    override fun onDraw(canvas: Canvas) {
+        canvas.drawLine(0f, height.toFloat(), width.toFloat(), 0f, paint)
+        super.onDraw(canvas)
     }
 
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        canvas.drawLine(0f, getHeight(), getWidth(), 0f, paint);
-        super.onDraw(canvas);
+    init {
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+        gravity = Gravity.CENTER
+        setBackgroundColor(getContext().getColor(R.color.colorPrimary))
+        setTextColor(Color.WHITE)
+        updateCode()
     }
 }

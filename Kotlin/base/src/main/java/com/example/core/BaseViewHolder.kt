@@ -1,36 +1,20 @@
-package com.example.core;
+package com.example.core
 
-import android.annotation.SuppressLint;
-import android.view.View;
-import android.widget.TextView;
+import android.view.View
+import android.widget.TextView
+import androidx.annotation.IdRes
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 
-import java.util.HashMap;
-import java.util.Map;
+abstract class BaseViewHolder(itemView: View) : ViewHolder(itemView) {
+    private val viewHashMap: MutableMap<Int, View?> = mutableMapOf()
 
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
-
-public abstract class BaseViewHolder extends RecyclerView.ViewHolder {
-    public BaseViewHolder(@NonNull View itemView) {
-        super(itemView);
+    protected fun <T : View> getView(@IdRes id: Int): T? {
+        return (viewHashMap[id] ?: itemView.findViewById<View?>(id).apply {
+            viewHashMap[id] = this
+        }) as T?
     }
 
-    @SuppressLint("UseSparseArrays")
-    private final Map<Integer, View> viewHashMap = new HashMap<>();
-
-    @SuppressWarnings("unchecked")
-    protected <T extends View> T getView(@IdRes int id) {
-        View view = viewHashMap.get(id);
-        if (view == null) {
-            view = itemView.findViewById(id);
-            viewHashMap.put(id, view);
-        }
-        return (T) view;
-    }
-
-    protected void setText(@IdRes int id, @Nullable String text) {
-        ((TextView) getView(id)).setText(text);
+    protected fun setText(@IdRes id: Int, text: String) {
+        (getView<View>(id) as TextView).text = text
     }
 }

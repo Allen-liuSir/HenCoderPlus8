@@ -1,79 +1,74 @@
-package com.example.app;
+package com.example.app
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 
-import com.example.app.entity.User;
-import com.example.app.widget.CodeView;
-import com.example.core.utils.CacheUtils;
-import com.example.core.utils.Utils;
-import com.example.lesson.LessonActivity;
+import android.content.Intent
+import android.os.Bundle
+import android.view.View
+import android.widget.Button
+import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
+import com.example.app.entity.User
+import com.example.app.widget.CodeView
+import com.example.core.utils.CacheUtils
+import com.example.core.utils.Utils
+import com.example.lesson.LessonActivity
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+class MainActivity : AppCompatActivity(), View.OnClickListener {
 
-public class MainActivity extends AppCompatActivity
-        implements View.OnClickListener {
+    private val usernameKey = "username"
+    private val passwordKey = "password"
 
-    private final String usernameKey = "username";
-    private final String passwordKey = "password";
+    private lateinit var et_username: EditText
+    private lateinit var et_password: EditText
+    private lateinit var et_code: EditText
 
-    private EditText et_username;
-    private EditText et_password;
-    private EditText et_code;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        et_username = findViewById(R.id.et_username);
-        et_password = findViewById(R.id.et_password);
-        et_code = findViewById(R.id.et_code);
+        findViewById<EditText>(R.id.et_username).let {
+            et_username = it
+            it.setText(CacheUtils[usernameKey])
+        }
+        findViewById<EditText>(R.id.et_password).let {
+            et_password = it
+            it.setText(CacheUtils[passwordKey])
+        }
 
-        et_username.setText(CacheUtils.get(usernameKey));
-        et_password.setText(CacheUtils.get(passwordKey));
+        et_code = findViewById(R.id.et_code)
 
-        final Button btn_login = findViewById(R.id.btn_login);
-        final CodeView img_code = findViewById(R.id.code_view);
-        btn_login.setOnClickListener(this);
-        img_code.setOnClickListener(this);
+        findViewById<Button>(R.id.btn_login).setOnClickListener(this)
+        findViewById<CodeView>(R.id.code_view).setOnClickListener(this)
     }
 
-    @Override
-    public void onClick(View v) {
-        if (v instanceof CodeView) {
-            CodeView codeView = (CodeView) v;
-            codeView.updateCode();
-        } else if (v instanceof Button) {
-            login();
+    override fun onClick(v: View) {
+        when(v) {
+            is CodeView -> v.updateCode()
+            is Button -> login()
         }
     }
 
-    private void login() {
-        final String username = et_username.getText().toString();
-        final String password = et_password.getText().toString();
-        final String code = et_code.getText().toString();
-
-        final User user = new User(username, password, code);
+    private fun login() {
+        val username = et_username.text.toString()
+        val password = et_password.text.toString()
+        val code = et_code.text.toString()
+        val user = User(username, password, code)
         if (verify(user)) {
-            CacheUtils.save(usernameKey, username);
-            CacheUtils.save(passwordKey, password);
-            startActivity(new Intent(this, LessonActivity.class));
+            CacheUtils.save(usernameKey, username)
+            CacheUtils.save(passwordKey, password)
+            startActivity(Intent(this, LessonActivity::class.java))
         }
     }
 
-    private boolean verify(User user) {
-        if (user.getUsername() != null && user.getUsername().length() < 4) {
-            Utils.toast("用户名不合法");
-            return false;
+    private fun verify(user: User): Boolean {
+        if (user.username?.length ?: 0 < 4) {
+            Utils.toast("用户名不合法")
+            return false
         }
-        if (user.getPassword() != null && user.getPassword().length() < 4) {
-            Utils.toast("密码不合法");
-            return false;
+        if (user.password?.length ?: 0 < 4) {
+            Utils.toast("密码不合法")
+            return false
         }
-        return true;
+        return true
     }
 }

@@ -1,23 +1,14 @@
-package com.example.core.utils;
+package com.example.core.utils
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Context
+import com.example.core.BaseApplication
+import com.example.core.R
 
-import com.example.core.BaseApplication;
-import com.example.core.R;
+object CacheUtils {
 
-public class CacheUtils {
-    @SuppressLint("StaticFieldLeak")
-    private static Context context = BaseApplication.currentApplication();
+    private val SP = BaseApplication.application.getSharedPreferences(BaseApplication.application.getString(R.string.app_name), Context.MODE_PRIVATE)
 
-    private static SharedPreferences SP = context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE);
+    fun save(key: String?, value: String?) = SP.edit().putString(key, value).apply()
 
-    public static void save(String key, String value) {
-        SP.edit().putString(key, value).apply();
-    }
-
-    public static String get(String key) {
-        return SP.getString(key, null);
-    }
+    operator fun get(key: String?) = SP.getString(key, null)
 }
